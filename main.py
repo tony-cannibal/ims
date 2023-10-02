@@ -6,7 +6,8 @@ from tkinter import ttk
 class Application(tkinter.Tk):
     def __init__(self):
         super().__init__()
-        self.title('File Search Engine')
+        self.title('Inventario Feeder')
+        self.geometry('610x780')
         self.style = Style('journal')
         self.login = Login(self, "Hello There.")
         self.login.pack()
