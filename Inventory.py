@@ -47,7 +47,7 @@ class Inventory(ttk.Frame):
             (0, 1, 2), weight=1, uniform="column")
 
         self.label_sap = tk.Label(
-            self.statusFrame, text="SAP", **cn.labelConf)
+            self.statusFrame, text="SAP", background="#666", **cn.labelConf)
         self.label_sap.grid(row=0, column=0, sticky="NSEW", padx=(6, 0))
         self.labelSapAmount = tk.Label(
             self.statusFrame, text="0", **cn.labelConf)
