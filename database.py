@@ -12,5 +12,16 @@ headings = [
     "Descrip.breve"
 ]
 
+
+def createTables(connection):
+    con = mariadb.connect(**connection)
+    cur = con.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS wip (
+            mes VARCHAR(20),
+
+            );""")
+
+
 if __name__ == "__main__":
     print(len(headings))

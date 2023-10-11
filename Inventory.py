@@ -25,7 +25,8 @@ class Inventory(ttk.Frame):
                           pady=20, columnspan=4)
 
         # self.combo = ttk.Combobox(self, width=8)
-        # self.combo.grid(row=1, column=3, columnspan=1, padx=(15, 0), ipadx=10)
+        # self.combo.grid(row=1, column=3, columnspan=1,
+        #                  padx=(15, 0), ipadx=10)
 
         self.resetButton = tk.Button(
             self, text="Opciones", font=customFont,
