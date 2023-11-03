@@ -97,7 +97,8 @@ class Inventory(ttk.Frame):
         self.history.pack(expand=1, fill="both")
 
         self.faltantes = ttk.Treeview(self.missingTab,
-                                      columns=cn.columnHeadigns, show="headings")
+                                      columns=cn.columnHeadigns,
+                                      show="headings")
         for i in range(4):
             self.faltantes.heading(
                 cn.columnHeadigns[i], text=cn.columnHeadigns[i])
