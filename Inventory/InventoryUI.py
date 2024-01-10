@@ -2,18 +2,23 @@ import tkinter as tk
 from tkinter import font
 # from ttkbootstrap import Style
 from tkinter import ttk
-import constants as cn
+from datetime import date
+from . import constants as cn
+from . import functions as fn
 
 
 class Inventory(ttk.Frame):
-    def __init__(self, parent, changeGeometry):
+    def __init__(self, parent, controller):
         super().__init__(parent)
+        self.controller = controller
+        self.area = "M1"
+        self.mes = date.today().strftime("%m%y")
+        self.wip, self.lotes = fn.getWip(cn.database, self.area, self.mes)
 
         ######################################
         # Data Capture
         self.grid_columnconfigure(
             (0, 1, 2, 3, 4, 5), weight=1, uniform="column")
-        self.changeSize = changeGeometry
 
         self.label_1 = ttk.Label(
             self, text="INVENTARIO DE LOTES FEEDER", font="arial 14")
@@ -30,10 +35,10 @@ class Inventory(ttk.Frame):
         # self.combo.grid(row=1, column=3, columnspan=1,
         #                  padx=(15, 0), ipadx=10)
 
-        self.resetButton = tk.Button(
+        self.optionButton = tk.Button(
             self, text="Opciones", font=customFont,
-            command=lambda: self.changeSize("inventory"))
-        self.resetButton.grid(row=1, column=4, padx=10, sticky="EW")
+            command=lambda: controller.show_frame("StartPage"))
+        self.optionButton.grid(row=1, column=4, padx=10, sticky="EW")
 
         self.configButton = tk.Button(
             self, text="Configuracion", font=customFont,

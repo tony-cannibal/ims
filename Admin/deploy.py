@@ -32,5 +32,26 @@ def createTables(connection):
             fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             );""")
 
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS inventario (
+            id VARCHAR(50) PRIMARY KEY,
+            lote VARCHAR(10),
+            modelo VARCHAR(10),
+            item VARCHAR(10),
+            num_parte VARCHAR(10),
+            area VARCHAR(10),
+            fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );""")
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS global_conf (
+            id INT PRIMARY KEY,
+            option VARCHAR(50),
+            state INT,
+            update_at TIMESTAMP
+            );""")
+    cur.close()
+    con.close()
+
 
 createTables(database)
