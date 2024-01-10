@@ -13,7 +13,7 @@ class Inventory(ttk.Frame):
         self.controller = controller
         self.area = "M1"
         self.mes = date.today().strftime("%m%y")
-        self.wip, self.lotes = fn.getWip(cn.database, self.area, self.mes)
+        self.wip, self.inventario = fn.getWip(cn.database, self.area, self.mes)
 
         ######################################
         # Data Capture
@@ -120,4 +120,5 @@ class Inventory(ttk.Frame):
     def getText(self, event):
         codigo = self.captura.get()
         self.captura.delete(0, 'end')
+        codigo = fn.checkCode(codigo)
         print(codigo)

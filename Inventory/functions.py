@@ -11,8 +11,8 @@ database = {
 }
 
 
-def getWip(connection, area):
-    month = date.today().strftime("%m%y")
+def getWip(connection: dict, area: str, month: str) -> (dict, dict):
+    # month = date.today().strftime("%m%y")
     con = mariadb.connect(**connection)
     cur = con.cursor()
 
@@ -27,9 +27,21 @@ def getWip(connection, area):
     inventario = cur.fetchall()
 
     cur.close()
+    con.close()
     wip = [list(i) for i in wip]
-    lotes = [i[10] for i in wip]
+    wip = {i[10]: i for i in wip}
+
     inventario = [list(i) for i in inventario]
-    for i in lotes:
-        print(i)
-    return wip, lotes, inventario
+    inventario = {i[1]: i for i in inventario}
+    return wip, inventario
+
+
+def checkCode(code):
+    length = len(code)
+    start = code[0]
+    if length == 10 and start == "4":
+        return code
+    elif start == "!" and length >= 17:
+        return code[1:12]
+    else:
+        return "err"

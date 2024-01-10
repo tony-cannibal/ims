@@ -1,7 +1,7 @@
 import tkinter as tk
 # from tkinter import font
 from ttkbootstrap import Style
-from tkinter import ttk
+# from tkinter import ttk
 # import constants as cn
 
 from Inventory import InventoryUI
