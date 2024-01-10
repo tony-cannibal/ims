@@ -36,9 +36,10 @@ def createTables(connection):
         CREATE TABLE IF NOT EXISTS inventario (
             id VARCHAR(50) PRIMARY KEY,
             lote VARCHAR(10),
-            modelo VARCHAR(10),
-            item VARCHAR(10),
-            num_parte VARCHAR(10),
+            modelo VARCHAR(20),
+            item VARCHAR(50),
+            num_parte VARCHAR(50),
+            cantidad INT,
             area VARCHAR(10),
             fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             );""")

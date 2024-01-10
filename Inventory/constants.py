@@ -4,8 +4,8 @@ fontLable = "Arial 12"
 
 borderColor = "#ccc"
 
-columnHeadigns = ["Lote", "Modelo", "Item", "N/P"]
-columnWith = [50, 50, 50, 50]
+columnHeadigns = ["Lote", "Modelo", "Item", "N/P", "Cantidad"]
+columnWith = [40, 40, 40, 40, 40]
 
 database = {
     'host': '172.18.4.58',
