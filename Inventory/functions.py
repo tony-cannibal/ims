@@ -14,17 +14,14 @@ database = {
 def getWip(connection: dict, area: str, month: str) -> (dict, dict):
     con = mariadb.connect(**connection)
     cur = con.cursor()
-
     cur.execute("""
     SELECT * FROM wip WHERE id LIKE %s AND area = %s;
                 """, (month + "%", area))
     wip = cur.fetchall()
-
     cur.close()
     con.close()
     wip = [list(i) for i in wip]
     wip = {i[10]: i for i in wip}
-
     return wip
 
 
