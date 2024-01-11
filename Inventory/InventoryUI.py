@@ -16,6 +16,7 @@ class Inventory(ttk.Frame):
         self.wip = fn.getWip(cn.database, self.area, self.mes)
         self.wipLength = len(self.wip)
         self.inventory = {}
+        self.inventoryLength = len(self.inventory)
 
         ######################################
         # Data Capture
@@ -38,14 +39,18 @@ class Inventory(ttk.Frame):
         #                  padx=(15, 0), ipadx=10)
 
         self.optionButton = tk.Button(
-            self, text="Opciones", font=customFont,
-            command=lambda: controller.show_frame("StartPage"))
+            self, text="Opciones", font=customFont)
         self.optionButton.grid(row=1, column=4, padx=10, sticky="EW")
 
         self.configButton = tk.Button(
-            self, text="Configuracion", font=customFont,
-            command=lambda: self.changeSize("other"))
+            self, text="Configuracion", font=customFont)
+        # command=lambda: self.changeSize("other"))
         self.configButton.grid(row=1, column=5, sticky="EW")
+
+        self.statusLabel = tk.Label(self, text="Status",
+                                    ** cn.statusConf)
+        self.statusLabel.grid(row=2, column=0, sticky="EW", pady=(0, 10),
+                              columnspan=8)
 
         #######################################
         # Labels
@@ -98,10 +103,12 @@ class Inventory(ttk.Frame):
 
         self.history = ttk.Treeview(self.progressTab,
                                     columns=cn.columnHeadigns, show="headings")
-        for i in range(5):
+        self.history.tag_configure('oddrow', background='#333333')
+        self.history.tag_configure('evenrow', background='#222222')
+        for i in range(6):
             self.history.heading(
                 cn.columnHeadigns[i], text=cn.columnHeadigns[i])
-        for i in range(5):
+        for i in range(6):
             self.history.column(
                 cn.columnHeadigns[i], width=cn.columnWith[i], anchor="center")
 
@@ -110,10 +117,13 @@ class Inventory(ttk.Frame):
         self.faltantes = ttk.Treeview(self.missingTab,
                                       columns=cn.columnHeadigns,
                                       show="headings")
-        for i in range(5):
+        self.faltantes.tag_configure('oddrow', background='#333333')
+        self.faltantes.tag_configure('evenrow', background='#222222')
+
+        for i in range(6):
             self.faltantes.heading(
                 cn.columnHeadigns[i], text=cn.columnHeadigns[i])
-        for i in range(5):
+        for i in range(6):
             self.faltantes.column(
                 cn.columnHeadigns[i], width=cn.columnWith[i], anchor="center")
         self.faltantes.pack(expand=1, fill="both")
@@ -124,6 +134,7 @@ class Inventory(ttk.Frame):
     ##############################################################
     # set
         self.updateTables()
+        self.updateLabels()
 
     ##############################################################
     # Functions
@@ -137,30 +148,46 @@ class Inventory(ttk.Frame):
     def updateTables(self):
         self.history.delete(*self.history.get_children())
         self.inventory = fn.getInventory(cn.database, self.area, self.mes)
+        inv_index = 1
         for i in self.inventory:
-            self.history.insert('', tk.END, values=(
-                self.inventory[i][1],
-                self.inventory[i][2],
-                self.inventory[i][3],
-                self.inventory[i][4],
+            row = (
+                inv_index, self.inventory[i][1], self.inventory[i][2],
+                self.inventory[i][3], self.inventory[i][4],
                 self.inventory[i][5]
-            ))
+            )
+            if inv_index % 2 == 0:
+                self.history.insert('', tk.END, values=row, tags=('evenrow',))
+            else:
+                self.history.insert('', tk.END, values=row, tags=('oddrow',))
+            inv_index += 1
+        self.history.yview_moveto(1)
 
+        hist_index = 1
         for i in self.wip:
             if i not in self.inventory:
-                self.faltantes.insert('', tk.END, values=(
+                row = (
+                    hist_index,
                     self.wip[i][10],
                     self.wip[i][3],
                     self.wip[i][12],
                     self.wip[i][5],
                     self.wip[i][11]
-                ))
+                )
+                if hist_index % 2 == 0:
+                    self.faltantes.insert('', tk.END, values=row,
+                                          tags=('evenrow'))
+                else:
+                    self.faltantes.insert('', tk.END, values=row,
+                                          tags=('oddrow'))
+                hist_index += 1
+        self.faltantes.yview_moveto(1)
 
     def captureItem(self, event):
         codigo = self.captura.get()
         self.captura.delete(0, 'end')
         codigo = fn.checkCode(codigo)
         if codigo == "err":
+            self.statusLabel.config(text="Codigo Incorrecto", bg="#590707")
             return
         if codigo in self.wip:
             if codigo not in self.inventory:
@@ -175,9 +202,24 @@ class Inventory(ttk.Frame):
                 ]
                 fn.captureRecord(record, self.mes, cn.database)
                 self.updateTables()
+                self.updateLabels()
+                self.statusLabel.config(
+                    text=f"Lote {codigo} inventariado.", bg="#145710")
                 print("Record Saved")
             else:
+                self.statusLabel.config(
+                    text=f"El lote {codigo} ya esta inventariado.",
+                    bg="#7e8a13")
                 print("Record Not Saved")
-
         else:
+            self.statusLabel.config(
+                text=f"El lote {codigo} no esta en wip", bg="#590707")
             print("not in inventory")
+
+    def updateLabels(self):
+        self.inventoryLength = len(self.inventory)
+        self.labelInventarioAmount.config(text=str(self.inventoryLength))
+        porcentaje = str("{:.2f}".format(float(self.inventoryLength /
+                                               self.wipLength) * 100))
+        self.labelPorcentajeAmount.config(
+            text=porcentaje+"%")

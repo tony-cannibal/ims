@@ -36,14 +36,15 @@ class Application(tk.Tk):
 
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
+        self.changeGeometry(page_name)
         frame = self.frames[page_name]
         frame.tkraise()
 
     def changeGeometry(self, window):
-        if window == "inventory":
+        if window == "StartPage":
             self.geometry('800x520')
-        else:
-            self.geometry('800x800')
+        if window == "Inventory":
+            self.geometry('800x560')
 
 
 if __name__ == '__main__':
