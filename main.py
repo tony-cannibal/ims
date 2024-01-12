@@ -3,9 +3,11 @@ import tkinter as tk
 from ttkbootstrap import Style
 # from tkinter import ttk
 # import constants as cn
+import os
 
 from Inventory import InventoryUI
 from Start import SartUI
+from Admin import AdminUI
 
 
 class Application(tk.Tk):
@@ -15,15 +17,18 @@ class Application(tk.Tk):
         self.geometry('800x520')
         self.resizable(False, False)
         self.style = Style('darkly')
+
+        self.rootPath = "/".join(os.getcwd().split("\\"))
+
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True, padx=20, pady=10)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (SartUI.StartPage, InventoryUI.Inventory):
+        for F in (SartUI.StartPage, InventoryUI.Inventory, AdminUI.Admin):
             page_name = F.__name__
-            frame = F(parent=container, controller=self)
+            frame = F(parent=container, controller=self, path=self.rootPath)
             self.frames[page_name] = frame
 
             # put all of the pages in the same location;

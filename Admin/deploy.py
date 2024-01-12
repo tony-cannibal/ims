@@ -41,6 +41,7 @@ def createTables(connection):
             num_parte VARCHAR(50),
             cantidad INT,
             area VARCHAR(10),
+            estacion VARCHAR(20),
             fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             );""")
 
@@ -50,6 +51,14 @@ def createTables(connection):
             option VARCHAR(50),
             state INT,
             update_at TIMESTAMP
+            );""")
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS anomalies (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            anomaly VARCHAR(50) UNIQUE,
+            lot VARCHAR(20),
+            fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             );""")
     cur.close()
     con.close()

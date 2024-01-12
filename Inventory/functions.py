@@ -1,5 +1,6 @@
 import mariadb
-# from datetime import date
+import configparser
+from datetime import date
 
 
 database = {
@@ -9,6 +10,48 @@ database = {
     'password': 'Metallica24+',
     'port': 3306
 }
+
+
+def getConfig(path):
+    config = configparser.ConfigParser()
+    config.read(path + '/conf.ini')
+    area = config['config']['area']
+    station = config['config']['estacion']
+    return area, station
+
+
+def getDatabase(path):
+    config = configparser.ConfigParser()
+    config.read(path + '/conf.ini')
+    database = {
+        'host': config['database']['host'],
+        'database': config['database']['database'],
+        'user': config['database']['user'],
+        'password': config['database']['password'],
+        'port': int(config['database']['port'])
+    }
+    return database
+
+
+def getMonth(connection):
+    con = mariadb.connect(**connection)
+    cur = con.cursor()
+    cur.execute("""
+    SELECT * FROM global_conf WHERE conf_options = %s;
+                """, ('auto', ))
+    res = cur.fetchall()
+    auto = bool(int(res[0][2]))
+
+    cur.execute("""
+    SELECT * FROM global_conf WHERE conf_options = %s;
+                """, ('month', ))
+    res = cur.fetchall()
+    month = res[0][2]
+
+    if auto:
+        return date.today().strftime("%m%y")
+    else:
+        return month
 
 
 def getWip(connection: dict, area: str, month: str) -> (dict, dict):
@@ -59,12 +102,36 @@ def captureRecord(record, mes, connection):
     cur = con.cursor()
     cur.execute("""
     INSERT INTO inventario(
-        id, lote, modelo, item, num_parte, cantidad, area)
+        id, lote, modelo, item, num_parte, cantidad, area, estacion)
         VALUES(
-        %s, %s, %s, %s, %s, %s, %s
+        %s, %s, %s, %s, %s, %s, %s, %s
             );""", (
-                record[0], record[1], record[2],
-                record[3], record[4], record[5], record[6]
+                record[0], record[1], record[2], record[3],
+                record[4], record[5], record[6], record[7]
                 ))
+    con.commit()
+    cur.close()
+
+
+def checkAnomaly(identifier, connection):
+    con = mariadb.connect(**connection)
+    cur = con.cursor()
+
+    cur.execute("""
+    SELECT * FROM anomalies WHERE anomaly = %s;
+    """, (identifier,))
+    res = cur.fetchall()
+    if len(res) > 0:
+        return True
+    else:
+        return False
+
+
+def saveAnomaly(code, identifier, connection):
+    con = mariadb.connect(**connection)
+    cur = con.cursor()
+    cur.execute("""
+    INSERT INTO anomalies( anomaly, lot)
+        VALUES( %s, %s );""", (identifier, code))
     con.commit()
     cur.close()

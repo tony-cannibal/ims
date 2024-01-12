@@ -8,12 +8,14 @@ from . import functions as fn
 
 
 class Inventory(ttk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, path):
         super().__init__(parent)
         self.controller = controller
-        self.area = "M1"
-        self.mes = date.today().strftime("%m%y")
-        self.wip = fn.getWip(cn.database, self.area, self.mes)
+        self.rootPath = path
+        self.area, self.station = fn.getConfig(self.rootPath)
+        self.database = fn.getDatabase(self.rootPath)
+        self.mes = fn.getMonth(self.database)
+        self.wip = fn.getWip(self.database, self.area, self.mes)
         self.wipLength = len(self.wip)
         self.inventory = {}
         self.inventoryLength = len(self.inventory)
@@ -28,9 +30,10 @@ class Inventory(ttk.Frame):
         self.label_1.grid(row=0, column=0, columnspan=6)
         customFont = font.Font(family="Arial", size=14)
 
-        self.captura = ttk.Entry(self, font=customFont, width=50)
+        self.captura = ttk.Entry(
+            self, font=customFont, width=50, justify='center')
         self.captura.grid(row=1, column=0, sticky="EW",
-                          pady=20, columnspan=4)
+                          pady=20, columnspan=6)
 
         self.captura.bind('<Return>', self.captureItem)
 
@@ -38,14 +41,14 @@ class Inventory(ttk.Frame):
         # self.combo.grid(row=1, column=3, columnspan=1,
         #                  padx=(15, 0), ipadx=10)
 
-        self.optionButton = tk.Button(
-            self, text="Opciones", font=customFont)
-        self.optionButton.grid(row=1, column=4, padx=10, sticky="EW")
-
-        self.configButton = tk.Button(
-            self, text="Configuracion", font=customFont)
-        # command=lambda: self.changeSize("other"))
-        self.configButton.grid(row=1, column=5, sticky="EW")
+        # self.optionButton = tk.Button(
+        #     self, text="Opciones", font=customFont)
+        # self.optionButton.grid(row=1, column=4, padx=10, sticky="EW")
+        #
+        # self.configButton = tk.Button(
+        #     self, text="Configuracion", font=customFont)
+        # # command=lambda: self.changeSize("other"))
+        # self.configButton.grid(row=1, column=5, sticky="EW")
 
         self.statusLabel = tk.Label(self, text="Status",
                                     ** cn.statusConf)
@@ -139,15 +142,14 @@ class Inventory(ttk.Frame):
     ##############################################################
     # Functions
 
-    def getText(self, event):
-        codigo = self.captura.get()
-        self.captura.delete(0, 'end')
-        codigo = fn.checkCode(codigo)
-        print(codigo)
+    # def getText(self, event):
+    #     codigo = self.captura.get()
+    #     self.captura.delete(0, 'end')
+    #     codigo = fn.checkCode(codigo)
 
     def updateTables(self):
         self.history.delete(*self.history.get_children())
-        self.inventory = fn.getInventory(cn.database, self.area, self.mes)
+        self.inventory = fn.getInventory(self.database, self.area, self.mes)
         inv_index = 1
         for i in self.inventory:
             row = (
@@ -185,6 +187,8 @@ class Inventory(ttk.Frame):
     def captureItem(self, event):
         codigo = self.captura.get()
         self.captura.delete(0, 'end')
+        if codigo == "":
+            return
         codigo = fn.checkCode(codigo)
         if codigo == "err":
             self.statusLabel.config(text="Codigo Incorrecto", bg="#590707")
@@ -199,25 +203,30 @@ class Inventory(ttk.Frame):
                     self.wip[codigo][5],
                     self.wip[codigo][11],
                     self.wip[codigo][14],
+                    self.station
                 ]
-                fn.captureRecord(record, self.mes, cn.database)
+                fn.captureRecord(record, self.mes, self.database)
                 self.updateTables()
                 self.updateLabels()
                 self.statusLabel.config(
                     text=f"Lote {codigo} inventariado.", bg="#145710")
-                print("Record Saved")
             else:
                 self.statusLabel.config(
                     text=f"El lote {codigo} ya esta inventariado.",
                     bg="#7e8a13")
-                print("Record Not Saved")
         else:
             self.statusLabel.config(
                 text=f"El lote {codigo} no esta en wip", bg="#590707")
-            print("not in inventory")
+            identifier = f"{self.mes}{codigo}{self.area}"
+            if not fn.checkAnomaly(identifier, self.database):
+                fn.saveAnomaly(codigo, identifier, self.database)
 
     def updateLabels(self):
         self.inventoryLength = len(self.inventory)
+        if self.inventoryLength == 0:
+            self.labelPorcentajeAmount.config(text="0%")
+            return
+
         self.labelInventarioAmount.config(text=str(self.inventoryLength))
         porcentaje = str("{:.2f}".format(float(self.inventoryLength /
                                                self.wipLength) * 100))

@@ -1,9 +1,9 @@
 import pandas as pd
 import mariadb
-from datetime import date
+# from datetime import date
+import configparser
 
-
-wip = pd.read_excel("WIP 2023-10-31 H01M05.XLSX").values.tolist()
+# wip = pd.read_excel("WIP 2023-10-31 H01M05.XLSX").values.tolist()
 
 database = {
     'host': '172.18.4.58',
@@ -13,21 +13,38 @@ database = {
     'port': 3306
 }
 
-columns = [
-    0, 3, 5, 6, 7,
-    8, 9, 10, 11,
-    18, 21, 23, 24
-]
 
-
-def insertIntoDb(wip, columns, connection):
-    '''Insert wip data into database.'''
-    today = date.today().strftime("%m%y")
-
-    area = {
-        "M152": "M1",
-        "M252": "M2",
+def getDatabase(path):
+    config = configparser.ConfigParser()
+    config.read(path + '/conf.ini')
+    database = {
+        'host': config['database']['host'],
+        'database': config['database']['database'],
+        'user': config['database']['user'],
+        'password': config['database']['password'],
+        'port': int(config['database']['port'])
     }
+    return database
+
+
+def ceckDatabase(date, connection):
+    con = mariadb.connect(**connection)
+    cur = con.cursor()
+    cur.execute("""
+    SELECT * FROM wip WHERE id LIKE %s LIMIT 10;
+                """, (date + "%",))
+    res = cur.fetchall()
+    cur.close()
+    if len(res) > 0:
+        return True
+    else:
+        return False
+
+
+def insertIntoDb(filedir, columns, connection, month, area):
+    '''Insert wip data into database.'''
+    wip = pd.read_excel(filedir).values.tolist()
+
     con = mariadb.connect(**connection)
     cur = con.cursor()
     for i in wip:
@@ -41,7 +58,7 @@ def insertIntoDb(wip, columns, connection):
                     %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                     %s, %s, %s, %s);
                     """, (
-            today + str(i[18]), i[columns[0]], i[columns[1]],
+            month + str(i[18]), i[columns[0]], i[columns[1]],
             i[columns[2]], i[columns[3]], i[columns[4]], i[columns[5]],
             i[columns[6]], i[columns[7]], i[columns[8]], i[columns[9]],
             i[columns[10]], i[columns[11]], i[columns[12]],
@@ -51,4 +68,5 @@ def insertIntoDb(wip, columns, connection):
 
 
 if __name__ == "__main__":
-    insertIntoDb(wip, columns, database)
+    # insertIntoDb(wip, columns, database)
+    pass
