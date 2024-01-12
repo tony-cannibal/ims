@@ -14,6 +14,40 @@ database = {
 }
 
 
+def getConfig(path):
+    config = configparser.ConfigParser()
+    config.read(path + '/conf.ini')
+    invOptions = {
+        'area': config['config']['area'],
+        'estacion': config['config']['estacion']
+    }
+    redOptions = {
+        'ip': config['database']['host'],
+        'database': config['database']['database'],
+    }
+    return invOptions, redOptions
+
+
+def saveInvOptions(area, estacion, path):
+    configFile = path + '/conf.ini'
+    config = configparser.ConfigParser()
+    config.read(configFile)
+    config.set('config', 'area', area)
+    config.set('config', 'estacion', estacion)
+    with open(configFile, 'w') as configuration:
+        config.write(configuration)
+
+
+def saveInvOptions(ip, dataBase, path):
+    configFile = path + '/conf.ini'
+    config = configparser.ConfigParser()
+    config.read(configFile)
+    config.set('database', 'host', ip)
+    config.set('database', 'database', dataBase)
+    with open(configFile, 'w') as configuration:
+        config.write(configuration)
+
+
 def getDatabase(path):
     config = configparser.ConfigParser()
     config.read(path + '/conf.ini')
