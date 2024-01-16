@@ -139,9 +139,9 @@ class Admin(ttk.Frame):
         self.button1.grid(row=4, column=4, columnspan=2,
                           sticky="EW", padx=(40, 10))
 
-        self.statusLabel = tk.Label(
+        self.wipStatusLabel = tk.Label(
             self.addDataFrame, text="", fg="red", font="Arial 20")
-        self.statusLabel.grid(row=5, column=0, columnspan=6, pady=(20, 0))
+        self.wipStatusLabel.grid(row=5, column=0, columnspan=6, pady=(20, 0))
 
         #######################################################################
         # Delete Data Tab
@@ -174,7 +174,7 @@ class Admin(ttk.Frame):
 
         self.deleteButton = tk.Button(
             self.deleteDataFrame, text="Borrar", font=buttonFont, padx=0,
-            command=self.uploadData)
+            command=self.deleteWip)
         self.deleteButton.grid(row=4, column=4, columnspan=2,
                                sticky="EW", padx=(40, 10))
 
@@ -233,23 +233,27 @@ class Admin(ttk.Frame):
         exist = fn.ceckDatabase(date, self.database)
 
         if exist and date != "" and self.filename != "":
-            self.statusLabel.config(
+            self.wipStatusLabel.config(
                 text="Ya existen datos en la fecha.", fg="red")
             return
 
         if self.filename == "":
-            self.statusLabel.config(
+            self.wipStatusLabel.config(
                 text="Debes selecionar un archivo.", fg="red")
             return
         if month == "":
-            self.statusLabel.config(
+            self.wipStatusLabel.config(
                 text="Debes introducir el mes.", fg="red")
             return
         if year == "":
-            self.statusLabel.config(
+            self.wipStatusLabel.config(
                 text="Debes introducir el año.", fg="red")
             return
         fn.insertIntoDb(self.filename, cn.columns,
                         self.database, date, cn.area)
-        self.statusLabel.config(
+        self.wipStatusLabel.config(
             text="Los datos se cargaron exitosamente.", fg="green")
+
+    def deleteWip(self):
+        month = self.deleteMonthEntry.get() + self.deleteYearEntry.get()
+        fn.deleteData(month, self.database)

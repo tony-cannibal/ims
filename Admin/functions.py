@@ -101,6 +101,16 @@ def insertIntoDb(filedir, columns, connection, month, area):
     con.commit()
 
 
+def deleteData(month, connection):
+    con = mariadb.connect(**connection)
+    cur = con.cursor()
+    cur.execute("""
+    DELETE FROM wip
+        WHERE id LIKE %s;
+                """, (month + "%",))
+    con.commit()
+
+
 if __name__ == "__main__":
     # insertIntoDb(wip, columns, database)
     pass
