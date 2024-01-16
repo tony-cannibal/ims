@@ -1,8 +1,5 @@
 import tkinter as tk
-# from tkinter import font
 from ttkbootstrap import Style
-# from tkinter import ttk
-# import constants as cn
 import os
 
 from Inventory import InventoryUI
@@ -19,11 +16,6 @@ class Application(tk.Tk):
         self.style = Style('darkly')
 
         self.rootPath = "/".join(os.getcwd().split("\\"))
-
-        # container = tk.Frame(self)
-        # container.pack(side="top", fill="both", expand=True, padx=20, pady=10)
-        # container.grid_rowconfigure(0, weight=1)
-        # container.grid_columnconfigure(0, weight=1)
 
         self.container = tk.Frame(self)
         self.container.pack(side="top", fill="both",

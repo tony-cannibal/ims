@@ -23,7 +23,7 @@ class StartPage(ttk.Frame):
         self.button1 = tk.Button(self, text="Inicio", font=buttonFont, padx=60,
                                  command=self.showInventory)
         self.button1.pack(pady=10)
-        self.button2 = tk.Button(self, text="Administracion",
+        self.button2 = tk.Button(self, text="Opciones",
                                  font=buttonFont, padx=60,
                                  command=self.showAdmin)
         self.button2.pack(pady=10)
