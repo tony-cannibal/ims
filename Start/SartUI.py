@@ -15,7 +15,7 @@ class StartPage(ttk.Frame):
 
         customFont = font.Font(family="Arial", size=40, slant="italic")
         self.label = tk.Label(
-            self, text="Inventario Mensual Feeder", font=customFont)
+            self, text="Inventario Wip Feeder", font=customFont)
         # font=controller.title_font)
         self.label.pack(side="top", fill="x", pady=(150, 20))
 

@@ -26,7 +26,7 @@ class Inventory(ttk.Frame):
             (0, 1, 2, 3, 4, 5), weight=1, uniform="column")
 
         self.label_1 = ttk.Label(
-            self, text="INVENTARIO DE LOTES FEEDER", font="arial 14")
+            self, text="INVENTARIO DE WIP FEEDER", font="arial 14")
         self.label_1.grid(row=0, column=0, columnspan=6)
         customFont = font.Font(family="Arial", size=14)
 

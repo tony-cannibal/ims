@@ -210,7 +210,7 @@ class Admin(ttk.Frame):
     def saveRedOptions(self):
         ip = self.ipEntry.get()
         database = self.databaseEntry.get()
-        fn.saveInvOptions(ip, database, self.rootPath)
+        fn.saveRedOptions(ip, database, self.rootPath)
 
     def searchForFile(self):
         filetypes = (

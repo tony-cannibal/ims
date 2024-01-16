@@ -13,7 +13,7 @@ from Admin import AdminUI
 class Application(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title('Inventario Feeder')
+        self.title('Inventario Wip Feeder')
         self.geometry('800x520')
         self.resizable(False, False)
         self.style = Style('darkly')

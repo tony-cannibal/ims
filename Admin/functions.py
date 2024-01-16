@@ -38,7 +38,7 @@ def saveInvOptions(area, estacion, path):
         config.write(configuration)
 
 
-def saveInvOptions(ip, dataBase, path):
+def saveRedOptions(ip, dataBase, path):
     configFile = path + '/conf.ini'
     config = configparser.ConfigParser()
     config.read(configFile)
